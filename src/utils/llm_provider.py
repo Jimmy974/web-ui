@@ -323,5 +323,23 @@ def get_llm_model(provider: str, **kwargs):
             model_name=kwargs.get("model_name", "Qwen/QwQ-32B"),
             temperature=kwargs.get("temperature", 0.0),
         )
+    elif provider == "openrouter":
+        if not kwargs.get("base_url", ""):
+            base_url = os.getenv("OPENROUTER_ENDPOINT", "https://openrouter.ai/api/v1")
+        else:
+            base_url = kwargs.get("base_url")
+        
+        # OpenRouter requires the HTTP referer and title headers
+        # headers = {
+        #     "HTTP-Referer": os.getenv("OPENROUTER_REFERRER", "http://localhost:3000"),
+        #     "X-Title": os.getenv("OPENROUTER_APP_NAME", "Browser-Use-WebUI")
+        # }
+        
+        return ChatOpenAI(
+            model=kwargs.get("model_name", "openai/gpt-4.1-nano"),
+            temperature=kwargs.get("temperature", 0.0),
+            base_url=base_url,
+            api_key=api_key
+        )
     else:
         raise ValueError(f"Unsupported provider: {provider}")
